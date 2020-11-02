@@ -1,0 +1,287 @@
+
+Project Name: olympic dataset analysis using Spark SQL:
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Team Members:
+SECTION: KM005
+Name:                   Reg No:                Roll No:
+1) Sai Kumar Reddy      11601852               31
+2) Javeed Pasha MD      11604898               15
+3) Julakanti sai kumar  11606206               43
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
+
+val data = sqlContext.read.format("csv").option("header", "true").option("delimiter",",").load("/Files/bigdata/olympic_Data_Set_docx-253e1.csv") 
+
+data.createOrReplaceTempView("olympics")
+
+//Count total bronze medal won by football by each country
+val result1= sqlContext.sql("select Country,count(Medal) as Medal from olympics where Sport=='Football' and Medal=='Bronze' group by Country").show()
+
++-------+-----+
+|Country|Medal|
++-------+-----+
+|    BRA|   36|
+|    EUA|   19|
+|    ITA|   39|
+|    GHA|   13|
+|    GDR|   17|
+|    HUN|   17|
+|    NOR|   32|
+|    DEN|   14|
+|    NED|   36|
+|    USA|   12|
+|    KOR|   18|
+|    GER|   53|
+|    YUG|   17|
+|    CAN|   20|
+|    SWE|   34|
+|    URS|   53|
+|    FRG|   20|
+|    BUL|   14|
+|    BEL|   11|
+|    CHI|   18|
++-------+-----+
+only showing top 20 rows
+
+result1: Unit = ()
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//total medal won by each sport in usa
+val result2= sqlContext.sql("select Count(Medal) as Medal,country,sport from olympics where Country=='USA' group by Sport,country").show()
+
+ 
+(4) Spark Jobs
++-----+-------+-----------------+
+|Medal|country|            sport|
++-----+-------+-----------------+
+|   21|    USA|    Canoe / Kayak|
+|   52|    USA|          Fencing|
+|    9|    USA|             Polo|
+|  132|    USA|         Football|
+|   66|    USA|          Cycling|
+| 1184|    USA|         Aquatics|
+|  129|    USA|        Wrestling|
+|  121|    USA|       Equestrian|
+|    1|    USA|          Skating|
+|   17|    USA|Modern Pentathlon|
+|  178|    USA|       Gymnastics|
+|  190|    USA|         Shooting|
+|   60|    USA|         Softball|
+|  111|    USA|           Boxing|
+|   54|    USA|           Tennis|
+|  364|    USA|           Rowing|
+|   12|    USA|             Judo|
+|  139|    USA|          Sailing|
+|   11|    USA|       Ice Hockey|
+|   28|    USA|           Hockey|
++-----+-------+-----------------+
+only showing top 20 rows
+
+result2: Unit = ()
+Command took 2.20 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:17:01 PM on My Cluster
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//country wise medal 
+2
+val result3= sqlContext.sql("select Country,Medal,Count(Medal) as Count from olympics group by Medal,country Order by Count desc").show()
+3
+ 
+(1) Spark Jobs
++-------+------+-----+
+|Country| Medal|Count|
++-------+------+-----+
+|    USA|  Gold| 2235|
+|    USA|Silver| 1252|
+|    USA|Bronze| 1098|
+|    URS|  Gold|  838|
+|    URS|Silver|  627|
+|    GBR|Silver|  621|
+|    URS|Bronze|  584|
+|    GBR|Bronze|  553|
+|    GBR|  Gold|  546|
+|    FRA|Bronze|  497|
+|    FRA|Silver|  491|
+|    ITA|  Gold|  476|
+|    GER|Bronze|  475|
+|    AUS|Bronze|  472|
+|    GER|  Gold|  452|
+|    ITA|Silver|  416|
+|    HUN|  Gold|  412|
+|    FRA|  Gold|  408|
+|    AUS|Silver|  405|
+|    ITA|Bronze|  404|
++-------+------+-----+
+only showing top 20 rows
+
+result3: Unit = ()
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//no of medals won bycountry france in 1896
+2
+val result5= sqlContext.sql("select Country,Medal,Count(Medal) as Count,year from olympics where year=1896 and Country == 'FRA' group by Medal,country,year").show()
+(5) Spark Jobs
++-------+------+-----+----+
+|Country| Medal|Count|year|
++-------+------+-----+----+
+|    FRA|Bronze|    2|1896|
+|    FRA|Silver|    4|1896|
+|    FRA|  Gold|    5|1896|
++-------+------+-----+----+
+
+result5: Unit = ()
+
+1
+Command took 3.27 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:37:48 PM on My Cluster
+ear
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//highest medal got by which cuntry in a year
+2
+val r5=sqlContext.sql("select Country,Count(year) as Count,year from olympics group by year, Country order by Count desc ").show(1)
+(1) Spark Jobs
++-------+-----+----+
+|Country|Count|year|
++-------+-----+----+
+|    URS|  442|1980|
++-------+-----+----+
+only showing top 1 row
+
+r5: Unit = ()
+Command took 1.42 seconds -- by saikumarreddy783@gmaill.com at 11/15/2019, 12:39:06 PM on My Cluster
+ir country?
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// which athlete won highest medals to their country?
+2
+val r5=sqlContext.sql("select Country,Athlete,Discipline,Count(Athlete) as Count from olympics group by Athlete, Discipline,Country order by  Count desc " ).show(1)
+(1) Spark Jobs
++-------+---------------+----------+-----+
+|Country|        Athlete|Discipline|Count|
++-------+---------------+----------+-----+
+|    USA|PHELPS, Michael|  Swimming|   22|
++-------+---------------+----------+-----+
+only showing top 1 row
+
+r5: Unit = ()
+Command took 2.85 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:17:01 PM on My Cluster
+Football
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//how many gold medal in swimming country wise
+2
+val r5=sqlContext.sql("select Country ,Medal ,Discipline, Count(Medal) as Count from olympics  where Discipline='Football' and Medal='Gold' group by Country, Medal,Discipline order by Count desc " ).show(5)
+(1) Spark Jobs
++-------+-----+----------+-----+
+|Country|Medal|Discipline|Count|
++-------+-----+----------+-----+
+|    USA| Gold|  Football|   91|
+|    HUN| Gold|  Football|   46|
+|    URU| Gold|  Football|   44|
+|    URS| Gold|  Football|   38|
+|    GBR| Gold|  Football|   33|
++-------+-----+----------+-----+
+only showing top 5 rows
+
+r5: Unit = ()
+
+1
+Command took 1.10 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:42:58 PM on My Cluster
+val r5=sqlContext.sql("select Country ,Medal ,Discipline, Count(Discipline) as Count from olympics  group by Country, Medal,Discipline order by Count desc " ).show(1)
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//which country has highest gold medals with respect to discipline
+2
+val r5=sqlContext.sql("select Country ,Medal ,Discipline, Count(Discipline) as Count from olympics  group by Country, Medal,Discipline order by Count desc " ).show(1)
+(1) Spark Jobs
++-------+-----+----------+-----+
+|Country|Medal|Discipline|Count|
++-------+-----+----------+-----+
+|    USA| Gold|  Swimming|  500|
++-------+-----+----------+-----+
+only showing top 1 row
+
+r5: Unit = ()
+Command took 1.65 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:45:09 PM on My Cluster
+val r5=sqlContext.sql("select Country , Count(Medal) as Count from olympics  group by Country, Medal order by Count asc " ).show(1)
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//least num of medals won by country  in the whole dataset?
+2
+val r5=sqlContext.sql("select Country , Count(Medal) as Count from olympics  group by Country, Medal order by Count asc " ).show(1)
+(1) Spark Jobs
++-------+-----+
+|Country|Count|
++-------+-----+
+|    ECU|    1|
++-------+-----+
+only showing top 1 row
+
+r5: Unit = ()
+Command took 1.20 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:51:55 PM on My Cluster
+val r5=sqlContext.sql("select Gender,  Count(Medal) as Count from olympics  group by Gender" ).show()
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// no of medals won by males and females?
+2
+val r5=sqlContext.sql("select Gender,  Count(Medal) as Count from olympics  group by Gender" ).show()
+(5) Spark Jobs
++------+-----+
+|Gender|Count|
++------+-----+
+|   Men|22746|
+| Women| 8419|
++------+-----+
+
+r5: Unit = ()
+Command took 0.95 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 12:57:30 PM on My Cluster
+val r5=sqlContext.sql("select Country,Gender, Count(Medal) as Count from olympics where Gender='Women' group by Country, Gender order by Count  desc " ).show(1)
+1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//which country women won highest medals?
+2
+val r5=sqlContext.sql("select Country,Gender, Count(Medal) as Count from olympics where Gender='Women' group by Country, Gender order by Count  desc " ).show(1)
+(1) Spark Jobs
++-------+------+-----+
+|Country|Gender|Count|
++-------+------+-----+
+|    USA| Women| 1377|
++-------+------+-----+
+only showing top 1 row
+
+r5: Unit = ()
+Command took 3.07 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 1:02:41 PM on My Cluster
+e
+1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//higest no of medals won by women in which sports?
+2
+val r5=sqlContext.sql("select Country,Gender,Sport,Count(Medal) as Count from olympics where Gender='Women' group by Country,Sport,Gender order by Count  desc " ).show(1)
+3
+?
+(1) Spark Jobs
++-------+------+--------+-----+
+|Country|Gender|   Sport|Count|
++-------+------+--------+-----+
+|    USA| Women|Aquatics|  540|
++-------+------+--------+-----+
+only showing top 1 row
+
+r5: Unit = ()
+Command took 2.96 seconds -- by saikumarreddy783@gmail.com at 11/15/2019, 1:07:00 PM on My Cluster
